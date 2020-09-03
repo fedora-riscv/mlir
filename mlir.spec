@@ -1,5 +1,5 @@
 %global rc_ver 2
-%global baserelease 0.1
+%global baserelease 0.2
 %global maj_ver 11
 %global min_ver 0
 %global patch_ver 0
@@ -65,6 +65,7 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DCMAKE_SKIP_RPATH=ON \
         -DLLVM_LINK_LLVM_DYLIB:BOOL=ON \
         -DCMAKE_PREFIX_PATH=%{_libdir}/cmake/llvm/ \
+	-DLLVM_BUILD_UTILS:BOOL=ON \
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
         -DMLIR_INCLUDE_TESTS:BOOL=OFF \
         -DMLIR_INCLUDE_INTEGRATION_TESTS:BOOL=OFF \
@@ -96,6 +97,7 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/libMLIR*.a
 
 %files devel
+%{_bindir}/mlir-tblgen
 %{_libdir}/libMLIR*.so
 %{_libdir}/libmlir_runner_utils.so
 %{_libdir}/libmlir_c_runner_utils.so
@@ -105,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Wed Sep 02 2020 sguelton@redhat.com - 11.0.0-0.2.rc2
+- Package mlir-tblgen
+
 * Wed Aug 12 2020 Cristian Balint <cristian.balint@gmail.com> - 11.0.0-0.1.rc1
 - Initial version.
 
