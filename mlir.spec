@@ -1,5 +1,5 @@
 %global rc_ver 3
-%global baserelease 0.1
+%global baserelease 0.3
 %global maj_ver 11
 %global min_ver 0
 %global patch_ver 0
@@ -107,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Sun Sep 27 2020 sguelton@redhat.com - 11.0.0-0.3.rc3
+- Fix NVR
+
 * Thu Sep 24 2020 sguelton@redhat.com - 11.0.0-0.1.rc3
 - 11.0.0-rc3 Release
 
