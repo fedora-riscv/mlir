@@ -1,5 +1,5 @@
-%global rc_ver 6
-%global baserelease 0.5
+#%%global rc_ver 6
+%global baserelease 0.6
 %global maj_ver 11
 %global min_ver 0
 %global patch_ver 0
@@ -107,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Mon Oct 12 2020 sguelton@redhat.com - 11.0.0-0.6
+- llvm 11.0.0 - final release
+
 * Thu Oct 08 2020 sguelton@redhat.com - 11.0.0-0.5.rc6
 - 11.0.0-rc6
 
