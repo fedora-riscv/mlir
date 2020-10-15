@@ -1,5 +1,5 @@
 #%%global rc_ver 6
-%global baserelease 0.6
+%global baserelease 1
 %global maj_ver 11
 %global min_ver 0
 %global patch_ver 0
@@ -107,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Thu Oct 15 2020 sguelton@redhat.com - 11.0.0-1
+- Fix NVR
+
 * Mon Oct 12 2020 sguelton@redhat.com - 11.0.0-0.6
 - llvm 11.0.0 - final release
 
