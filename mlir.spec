@@ -1,9 +1,9 @@
-#%%global rc_ver 6
+%global rc_ver 1
 %global baserelease 1
 %global maj_ver 11
 %global min_ver 0
-%global patch_ver 0
-%global mlir_srcdir llvm-project-%{version}%{?rc_ver:rc%{rc_ver}}
+%global patch_ver 1
+%global mlir_srcdir llvm-project-%{version}%{?rc_ver:rc%{rc_ver}}.src
 
 Name: mlir
 Version: %{maj_ver}.%{min_ver}.%{patch_ver}
@@ -14,7 +14,7 @@ License: ASL 2.0 with exceptions
 URL: http://mlir.llvm.org
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
-Source2: https://prereleases.llvm.org/%{version}/hans-gpg-key.asc
+Source2: tstellar-gpg-key.asc
 
 # Support standalone build (MLIR is usually built as part of LLVM)
 Patch0: mlir-cmake-standalone.patch
@@ -107,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Dec 01 2020 sguelton@redhat.com - 11.0.1-1.rc1
+- llvm 11.0.1-rc1
+
 * Thu Oct 15 2020 sguelton@redhat.com - 11.0.0-1
 - Fix NVR
 
