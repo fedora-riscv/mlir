@@ -1,5 +1,5 @@
-%global rc_ver 1
-%global baserelease 1
+%global rc_ver 2
+%global baserelease 2
 %global maj_ver 11
 %global min_ver 0
 %global patch_ver 1
@@ -107,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Dec 22 2020 sguelton@redhat.com - 11.0.1-2.rc2
+- llvm 11.0.1-rc2
+
 * Tue Dec 01 2020 sguelton@redhat.com - 11.0.1-1.rc1
 - llvm 11.0.1-rc1
 
