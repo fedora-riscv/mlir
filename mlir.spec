@@ -1,13 +1,13 @@
-#%%global rc_ver 2
-%global baserelease 3
+%global rc_ver 1
+%global baserelease 1
 %global maj_ver 11
-%global min_ver 0
-%global patch_ver 1
+%global min_ver 1
+%global patch_ver 0
 %global mlir_srcdir llvm-project-%{version}%{?rc_ver:rc%{rc_ver}}.src
 
 Name: mlir
 Version: %{maj_ver}.%{min_ver}.%{patch_ver}
-Release: %{baserelease}%{?rc_ver:.rc%{rc_ver}}%{?dist}
+Release: %{?rc_ver:0.}%{baserelease}%{?rc_ver:.rc%{rc_ver}}%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
@@ -19,7 +19,7 @@ Source2: tstellar-gpg-key.asc
 # Support standalone build (MLIR is usually built as part of LLVM)
 Patch0: mlir-cmake-standalone.patch
 
-# Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work 
+# Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work
 ExcludeArch: armv7hl
 
 BuildRequires: gcc
@@ -107,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Thu Jan 14 2021 Serge Guelton - 11.1.0-0.1.rc1
+- 11.1.0-rc1 release
+
 * Wed Jan 06 2021 Serge Guelton - 11.0.1-3
 - LLVM 11.0.1 final
 
