@@ -1,5 +1,5 @@
-%global rc_ver 1
-%global baserelease 1
+%global rc_ver 2
+%global baserelease 2
 %global maj_ver 11
 %global min_ver 1
 %global patch_ver 0
@@ -107,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Fri Jan 22 2021 Serge Guelton - 11.1.0-0.2.rc2
+- llvm 11.1.0-rc2 release
+
 * Thu Jan 14 2021 Serge Guelton - 11.1.0-0.1.rc1
 - 11.1.0-rc1 release
 
