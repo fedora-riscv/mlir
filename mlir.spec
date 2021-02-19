@@ -1,7 +1,7 @@
-%global rc_ver 2
-%global baserelease 3
-%global maj_ver 11
-%global min_ver 1
+%global rc_ver 1
+%global baserelease 1
+%global maj_ver 12
+%global min_ver 0
 %global patch_ver 0
 %global mlir_srcdir llvm-project-%{version}%{?rc_ver:rc%{rc_ver}}.src
 
@@ -16,8 +16,8 @@ Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{versio
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: tstellar-gpg-key.asc
 
-# Support standalone build (MLIR is usually built as part of LLVM)
-Patch0: mlir-cmake-standalone.patch
+Patch0: 0001-MLIR-CMake-Support-building-MLIR-standalone.patch
+Patch1: 0001-MLIR-Fix-building-unittests-in-in-tree-build.patch
 
 # Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work
 ExcludeArch: armv7hl
@@ -65,7 +65,7 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DCMAKE_SKIP_RPATH=ON \
         -DLLVM_LINK_LLVM_DYLIB:BOOL=ON \
         -DCMAKE_PREFIX_PATH=%{_libdir}/cmake/llvm/ \
-	-DLLVM_BUILD_UTILS:BOOL=ON \
+        -DLLVM_BUILD_UTILS:BOOL=ON \
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
         -DMLIR_INCLUDE_TESTS:BOOL=OFF \
         -DMLIR_INCLUDE_INTEGRATION_TESTS:BOOL=OFF \
@@ -75,7 +75,7 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DLLVM_LIBDIR_SUFFIX=
 %endif
 # build process .exe tools normally use rpath or static linkage
-export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
+export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %cmake_build
 
 
@@ -107,6 +107,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/bin
 %{_libdir}/cmake/mlir
 
 %changelog
+* Thu Feb 18 2021 sguelton@redhat.com - 12.0.0-0.1.rc1
+- llvm 12.0.0-rc1 release
+
 * Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 11.1.0-0.3.rc2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 

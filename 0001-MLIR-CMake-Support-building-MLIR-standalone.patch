@@ -1,0 +1,134 @@
+From 2aa1af9b1da0d832270d9b8afcba19a4aba2c366 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@moritz.systems>
+Date: Tue, 2 Feb 2021 13:09:45 -0600
+Subject: [PATCH] [MLIR] [CMake] Support building MLIR standalone
+
+Add the necessary bits to CMakeLists to make it possible to configure
+MLIR against installed LLVM, and build it with minimal need for LLVM
+source tree.  The latter is only necessary to run unittests, and if it
+is missing then unittests are skipped with a warning.
+
+This change includes the necessary changes to tests, in particular
+adding some missing substitutions and defining missing variables
+for lit.site.cfg.py substitution.
+
+Reviewed By: stephenneuendorffer
+
+Differential Revision: https://reviews.llvm.org/D85464
+
+Co-authored-by: Isuru Fernando <isuruf@gmail.com>
+---
+ mlir/CMakeLists.txt              | 33 ++++++++++++++++++++++++++++++++-
+ mlir/cmake/modules/AddMLIR.cmake |  1 +
+ mlir/test/CMakeLists.txt         |  5 ++++-
+ mlir/test/lit.cfg.py             |  4 ++++
+ 4 files changed, 41 insertions(+), 2 deletions(-)
+
+diff --git a/mlir/CMakeLists.txt b/mlir/CMakeLists.txt
+index cbae5fd..baacbdd3 100644
+--- a/mlir/CMakeLists.txt
++++ b/mlir/CMakeLists.txt
+@@ -1,10 +1,37 @@
+ # MLIR project.
++
++# Check if MLIR is built as a standalone project.
++if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
++  project(mlir)
++  cmake_minimum_required(VERSION 3.13.4)
++
++  find_package(LLVM CONFIG REQUIRED)
++  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LLVM_CMAKE_DIR})
++  include(HandleLLVMOptions)
++  include(AddLLVM)
++  include(TableGen)
++
++  include_directories(${LLVM_INCLUDE_DIRS})
++
++  set(LLVM_MAIN_SRC_DIR ${CMAKE_SOURCE_DIR}/../llvm CACHE PATH
++      "Path to LLVM source tree")
++  set(UNITTEST_DIR ${LLVM_MAIN_SRC_DIR}/utils/unittest)
++  if(EXISTS ${UNITTEST_DIR}/googletest/include/gtest/gtest.h)
++    add_subdirectory(${UNITTEST_DIR} utils/unittest)
++  endif()
++
++  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
++    "${CMAKE_CURRENT_BINARY_DIR}/lib${LLVM_LIBDIR_SUFFIX}")
++  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
++endif()
++
+ set(MLIR_MAIN_SRC_DIR     ${CMAKE_CURRENT_SOURCE_DIR}  )
+ set(MLIR_MAIN_INCLUDE_DIR ${MLIR_MAIN_SRC_DIR}/include )
+ 
+ set(MLIR_SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
+ set(MLIR_BINARY_DIR  ${CMAKE_CURRENT_BINARY_DIR})
+ set(MLIR_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
++set(MLIR_TOOLS_DIR   ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+ 
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+ 
+@@ -106,7 +133,11 @@ add_subdirectory(lib)
+ add_subdirectory(lib/CAPI)
+ if (MLIR_INCLUDE_TESTS)
+   add_definitions(-DMLIR_INCLUDE_TESTS)
+-  add_subdirectory(unittests)
++  if (TARGET gtest)
++    add_subdirectory(unittests)
++  else()
++    message(WARNING "gtest not found, unittests will not be available")
++  endif()
+   add_subdirectory(test)
+ endif()
+ if (MLIR_INCLUDE_INTEGRATION_TESTS)
+diff --git a/mlir/cmake/modules/AddMLIR.cmake b/mlir/cmake/modules/AddMLIR.cmake
+index 4cfd351..4a814ea 100644
+--- a/mlir/cmake/modules/AddMLIR.cmake
++++ b/mlir/cmake/modules/AddMLIR.cmake
+@@ -2,6 +2,7 @@ function(mlir_tablegen ofn)
+   tablegen(MLIR ${ARGV})
+   set(TABLEGEN_OUTPUT ${TABLEGEN_OUTPUT} ${CMAKE_CURRENT_BINARY_DIR}/${ofn}
+       PARENT_SCOPE)
++  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+ endfunction()
+ 
+ # Declare a dialect in the include directory
+diff --git a/mlir/test/CMakeLists.txt b/mlir/test/CMakeLists.txt
+index 9ab9c09..999201e 100644
+--- a/mlir/test/CMakeLists.txt
++++ b/mlir/test/CMakeLists.txt
+@@ -42,7 +42,6 @@ configure_lit_site_cfg(
+ 
+ set(MLIR_TEST_DEPENDS
+   FileCheck count not
+-  MLIRUnitTests
+   mlir-capi-ir-test
+   mlir-capi-pass-test
+   mlir-cpu-runner
+@@ -58,6 +57,10 @@ set(MLIR_TEST_DEPENDS
+   mlir_async_runtime
+   )
+ 
++if(TARGET gtest)
++  list(APPEND MLIR_TEST_DEPENDS MLIRUnitTests)
++endif()
++
+ if(LLVM_BUILD_EXAMPLES)
+   list(APPEND MLIR_TEST_DEPENDS
+     toyc-ch1
+diff --git a/mlir/test/lit.cfg.py b/mlir/test/lit.cfg.py
+index 482513b..bff47851 100644
+--- a/mlir/test/lit.cfg.py
++++ b/mlir/test/lit.cfg.py
+@@ -61,6 +61,10 @@ tools = [
+     'mlir-capi-ir-test',
+     'mlir-capi-pass-test',
+     'mlir-edsc-builder-api-test',
++    'mlir-cpu-runner',
++    'mlir-linalg-ods-gen',
++    'mlir-reduce',
++    'mlir-sdbm-api-test',
+ ]
+ 
+ # The following tools are optional
+-- 
+1.8.3.1
+
