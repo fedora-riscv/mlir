@@ -69,6 +69,7 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
         -DMLIR_INCLUDE_TESTS:BOOL=OFF \
         -DMLIR_INCLUDE_INTEGRATION_TESTS:BOOL=OFF \
+        -DBUILD_SHARED_LIBS=OFF \
 %if 0%{?__isa_bits} == 64
         -DLLVM_LIBDIR_SUFFIX=64
 %else
@@ -91,17 +92,18 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/libMLIR*.so.%{maj_ver}*
 %{_libdir}/libmlir_runner_utils.so.%{maj_ver}*
 %{_libdir}/libmlir_c_runner_utils.so.%{maj_ver}*
-%{_libdir}/libmlir_c_runner_utils_static.so.%{maj_ver}*
+%{_libdir}/libmlir_async_runtime.so.%{maj_ver}*
 
 %files static
 %{_libdir}/libMLIR*.a
+%{_libdir}/libmlir_c_runner_utils_static.a
 
 %files devel
 %{_bindir}/mlir-tblgen
 %{_libdir}/libMLIR*.so
 %{_libdir}/libmlir_runner_utils.so
 %{_libdir}/libmlir_c_runner_utils.so
-%{_libdir}/libmlir_c_runner_utils_static.so
+%{_libdir}//libmlir_async_runtime.so
 %{_includedir}/mlir
 %{_includedir}/mlir-c
 %{_libdir}/cmake/mlir
