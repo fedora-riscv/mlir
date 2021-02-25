@@ -16,8 +16,8 @@ Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{versio
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: tstellar-gpg-key.asc
 
-Patch0: 0001-MLIR-CMake-Support-building-MLIR-standalone.patch
-Patch1: 0001-MLIR-Fix-building-unittests-in-in-tree-build.patch
+Patch0: 0001-PATCH-mlir-Support-building-MLIR-standalone.patch
+Patch1: 0002-PATCH-mlir-Fix-building-unittests-in-in-tree-build.patch
 
 # Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work
 ExcludeArch: armv7hl

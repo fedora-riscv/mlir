@@ -1,7 +1,7 @@
-From 2aa1af9b1da0d832270d9b8afcba19a4aba2c366 Mon Sep 17 00:00:00 2001
+From 9deba96d8f15d948e92c49e40a671fbedc328457 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@moritz.systems>
 Date: Tue, 2 Feb 2021 13:09:45 -0600
-Subject: [PATCH] [MLIR] [CMake] Support building MLIR standalone
+Subject: [PATCH 1/2] [PATCH][mlir] Support building MLIR standalone
 
 Add the necessary bits to CMakeLists to make it possible to configure
 MLIR against installed LLVM, and build it with minimal need for LLVM
@@ -92,10 +92,10 @@ index 4cfd351..4a814ea 100644
  
  # Declare a dialect in the include directory
 diff --git a/mlir/test/CMakeLists.txt b/mlir/test/CMakeLists.txt
-index 9ab9c09..999201e 100644
+index 293d932..5feedd5 100644
 --- a/mlir/test/CMakeLists.txt
 +++ b/mlir/test/CMakeLists.txt
-@@ -42,7 +42,6 @@ configure_lit_site_cfg(
+@@ -43,7 +43,6 @@ configure_lit_site_cfg(
  
  set(MLIR_TEST_DEPENDS
    FileCheck count not
@@ -103,7 +103,7 @@ index 9ab9c09..999201e 100644
    mlir-capi-ir-test
    mlir-capi-pass-test
    mlir-cpu-runner
-@@ -58,6 +57,10 @@ set(MLIR_TEST_DEPENDS
+@@ -61,6 +60,10 @@ set(MLIR_TEST_DEPENDS
    mlir_async_runtime
    )
  
