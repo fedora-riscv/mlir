@@ -1,5 +1,5 @@
-%global rc_ver 2
-%global baserelease 3
+%global rc_ver 3
+%global baserelease 4
 %global maj_ver 12
 %global min_ver 0
 %global patch_ver 0
@@ -109,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Thu Mar 11 2021 sguelton@redhat.com - 12.0.0-0.4.rc3
+- LLVM 12.0.0 rc3
+
 * Wed Mar 10 2021 sguelton@redhat.com - 12.0.0-0.3.rc2
 - rebuilt
 
