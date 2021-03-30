@@ -1,5 +1,5 @@
 %global rc_ver 1
-%global baserelease 1
+%global baserelease 2
 %global maj_ver 12
 %global min_ver 0
 %global patch_ver 0
@@ -109,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 12.0.0-0.2.rc1
+- Rebuilt for removed libstdc++ symbol (#1937698)
+
 * Thu Feb 18 2021 sguelton@redhat.com - 12.0.0-0.1.rc1
 - llvm 12.0.0-rc1 release
 
