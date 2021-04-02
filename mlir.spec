@@ -1,5 +1,5 @@
-%global rc_ver 3
-%global baserelease 5
+%global rc_ver 4
+%global baserelease 6
 %global maj_ver 12
 %global min_ver 0
 %global patch_ver 0
@@ -109,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Fri Apr 02 2021 sguelton@redhat.com - 12.0.0-0.6.rc4
+- New upstream release candidate
+
 * Wed Mar 31 2021 Jonathan Wakely <jwakely@redhat.com> - 12.0.0-0.5.rc3
 - Rebuilt for removed libstdc++ symbols (#1937698)
 
