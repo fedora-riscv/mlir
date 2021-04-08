@@ -1,5 +1,5 @@
-%global rc_ver 4
-%global baserelease 6
+%global rc_ver 5
+%global baserelease 7
 %global maj_ver 12
 %global min_ver 0
 %global patch_ver 0
@@ -109,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Thu Apr 08 2021 sguelton@redhat.com - 12.0.0-0.7.rc5
+- New upstream release candidate
+
 * Fri Apr 02 2021 sguelton@redhat.com - 12.0.0-0.6.rc4
 - New upstream release candidate
 
