@@ -1,13 +1,12 @@
-%global rc_ver 5
-%global baserelease 7
+#%%global rc_ver 5
 %global maj_ver 12
 %global min_ver 0
 %global patch_ver 0
 %global mlir_srcdir llvm-project-%{version}%{?rc_ver:rc%{rc_ver}}.src
 
 Name: mlir
-Version: %{maj_ver}.%{min_ver}.%{patch_ver}
-Release: %{?rc_ver:0.}%{baserelease}%{?rc_ver:.rc%{rc_ver}}%{?dist}
+Version: %{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:~rc%{rc_ver}}
+Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
@@ -109,6 +108,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Fri Apr 16 2021 Tom Stellard <tstellar@redhat.com> - 12.0.0-1
+- 12.0.0 Release
+
 * Thu Apr 08 2021 sguelton@redhat.com - 12.0.0-0.7.rc5
 - New upstream release candidate
 
