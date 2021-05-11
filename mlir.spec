@@ -1,13 +1,12 @@
-%global rc_ver 1
-%global baserelease 2
+#%%global rc_ver 5
 %global maj_ver 12
 %global min_ver 0
 %global patch_ver 0
 %global mlir_srcdir llvm-project-%{version}%{?rc_ver:rc%{rc_ver}}.src
 
 Name: mlir
-Version: %{maj_ver}.%{min_ver}.%{patch_ver}
-Release: %{?rc_ver:0.}%{baserelease}%{?rc_ver:.rc%{rc_ver}}%{?dist}
+Version: %{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:~rc%{rc_ver}}
+Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
@@ -16,8 +15,8 @@ Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{versio
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: tstellar-gpg-key.asc
 
-Patch0: 0001-MLIR-CMake-Support-building-MLIR-standalone.patch
-Patch1: 0001-MLIR-Fix-building-unittests-in-in-tree-build.patch
+Patch0: 0001-PATCH-mlir-Support-building-MLIR-standalone.patch
+Patch1: 0002-PATCH-mlir-Fix-building-unittests-in-in-tree-build.patch
 
 # Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work
 ExcludeArch: armv7hl
@@ -109,8 +108,26 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
-* Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 12.0.0-0.2.rc1
-- Rebuilt for removed libstdc++ symbol (#1937698)
+* Fri Apr 16 2021 Tom Stellard <tstellar@redhat.com> - 12.0.0-1
+- 12.0.0 Release
+
+* Thu Apr 08 2021 sguelton@redhat.com - 12.0.0-0.7.rc5
+- New upstream release candidate
+
+* Fri Apr 02 2021 sguelton@redhat.com - 12.0.0-0.6.rc4
+- New upstream release candidate
+
+* Wed Mar 31 2021 Jonathan Wakely <jwakely@redhat.com> - 12.0.0-0.5.rc3
+- Rebuilt for removed libstdc++ symbols (#1937698)
+
+* Thu Mar 11 2021 sguelton@redhat.com - 12.0.0-0.4.rc3
+- LLVM 12.0.0 rc3
+
+* Wed Mar 10 2021 sguelton@redhat.com - 12.0.0-0.3.rc2
+- rebuilt
+
+* Wed Feb 24 2021 sguelton@redhat.com - 12.0.0-0.2.rc2
+- llvm 12.0.0-rc2 release
 
 * Thu Feb 18 2021 sguelton@redhat.com - 12.0.0-0.1.rc1
 - llvm 12.0.0-rc1 release

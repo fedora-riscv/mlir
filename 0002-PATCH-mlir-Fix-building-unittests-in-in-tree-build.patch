@@ -1,7 +1,7 @@
-From c95c0db2eb687edb91afa628655bb5025f7e863b Mon Sep 17 00:00:00 2001
+From e09b298273994b20cc8747765a567d716e241fd2 Mon Sep 17 00:00:00 2001
 From: Isuru Fernando <isuruf@gmail.com>
 Date: Thu, 4 Feb 2021 01:59:08 +0000
-Subject: [PATCH] [MLIR] Fix building unittests in in-tree build
+Subject: [PATCH 2/2] [PATCH][mlir] Fix building unittests in in-tree build
 
 Reviewed By: mehdi_amini
 
