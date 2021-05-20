@@ -110,6 +110,12 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %files static
 %{_libdir}/libMLIR*.a
 
+%if %{without snapshot_build}
+# This file is not longer there as a when building snapshots.
+# Only these exist: libmlir_c_runner_utils.so  libmlir_c_runner_utils.so.13
+%{_libdir}/libmlir_c_runner_utils_static.a
+%endif
+
 %files devel
 %{_bindir}/mlir-tblgen
 %{_libdir}/libMLIR*.so
