@@ -5,19 +5,29 @@
 %global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
 %global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 
+%if %{with snapshot_build}
+%undefine rc_ver
+%global llvm_snapshot_vers pre%{llvm_snapshot_yyyymmdd}.g%{llvm_snapshot_git_revision_short}
+%global mlir_srcdir llvm-project-%{llvm_snapshot_version_major}.%{llvm_snapshot_version_minor}.%{llvm_snapshot_version_patch}.src
+%global maj_ver %{llvm_snapshot_version_major}
+%global min_ver %{llvm_snapshot_version_minor}
+%global patch_ver %{llvm_snapshot_version_patch}
+%endif
+
 Name: mlir
-Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
+Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}%{?llvm_snapshot_vers:~%{llvm_snapshot_vers}}
 Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
 URL: http://mlir.llvm.org
+%if %{with snapshot_build}
+Source0: https://github.com/kwk/llvm-project/releases/download/source-snapshot/llvm-project-%{llvm_snapshot_yyyymmdd}.src.tar.xz
+%else
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: tstellar-gpg-key.asc
-
-#Patch0: 0001-PATCH-mlir-Support-building-MLIR-standalone.patch
-#Patch1: 0002-PATCH-mlir-Fix-building-unittests-in-in-tree-build.patch
+%endif
 
 # Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work
 ExcludeArch: armv7hl
@@ -54,7 +64,9 @@ Requires: %{name}-static%{?_isa} = %{version}-%{release}
 MLIR development files.
 
 %prep
+%if %{without snapshot_build}
 %{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
+%endif
 %autosetup -n %{mlir_srcdir}/%{name} -p2
 # remove all but keep mlir
 find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
@@ -109,6 +121,11 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+%if %{with snapshot_build}
+* %{lua: print(os.date("%a %b %d %Y"))} LLVM snapshot build bot
+- Snapshot build of %{version}
+%endif
+
 * Wed Jan 12 2022 Nikita Popov <npopov@redhat.com> - 13.0.1~rc1-1
 - Update to LLVM 13.0.1rc1
 
