@@ -109,10 +109,6 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 
 %files static
 %{_libdir}/libMLIR*.a
-%if %{with snapshot_build}
-# To properly fix this, one should get this patch merged: https://reviews.llvm.org/D102881
-%{_libdir}/libMlirLspServerLib.a
-%endif
 
 %if %{without snapshot_build}
 # This file is not longer there as a when building snapshots.
