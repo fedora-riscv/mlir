@@ -1,11 +1,12 @@
-#%%global rc_ver 5
+#global rc_ver 3
 %global maj_ver 12
 %global min_ver 0
-%global patch_ver 0
-%global mlir_srcdir llvm-project-%{version}%{?rc_ver:rc%{rc_ver}}.src
+%global patch_ver 1
+%global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
+%global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 
 Name: mlir
-Version: %{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:~rc%{rc_ver}}
+Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
 Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
@@ -108,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Jul 13 2021 Tom Stellard <tstellar@redhat.com> - 12.0.1-1
+- 12.0.1 Release
+
 * Fri Apr 16 2021 Tom Stellard <tstellar@redhat.com> - 12.0.0-1
 - 12.0.0 Release
 
