@@ -1,4 +1,4 @@
-%global rc_ver 3
+#global rc_ver 3
 %global maj_ver 12
 %global min_ver 0
 %global patch_ver 1
@@ -109,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Jul 13 2021 Tom Stellard <tstellar@redhat.com> - 12.0.1-1
+- 12.0.1 Release
+
 * Thu Jul 01 2021 Tom Stellard <tstellar@redhat.com> - 12.0.1~rc3-1
 - 12.0.1-rc3 Release
 
