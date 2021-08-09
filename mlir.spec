@@ -1,13 +1,13 @@
-#global rc_ver 3
-%global maj_ver 12
+%global rc_ver 1
+%global maj_ver 13
 %global min_ver 0
-%global patch_ver 1
+%global patch_ver 0
 %global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
 %global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 2%{?dist}
+Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
@@ -16,8 +16,8 @@ Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{versio
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: tstellar-gpg-key.asc
 
-Patch0: 0001-PATCH-mlir-Support-building-MLIR-standalone.patch
-Patch1: 0002-PATCH-mlir-Fix-building-unittests-in-in-tree-build.patch
+#Patch0: 0001-PATCH-mlir-Support-building-MLIR-standalone.patch
+#Patch1: 0002-PATCH-mlir-Fix-building-unittests-in-in-tree-build.patch
 
 # Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work
 ExcludeArch: armv7hl
@@ -39,16 +39,8 @@ improve compilation for heterogeneous hardware, significantly reduce
 the cost of building domain specific compilers, and aid in connecting
 existing compilers together.
 
-%package static
-Summary: MLIR static files
-Requires: %{name}%{?_isa} = %{version}-%{release}
-
-%description static
-MLIR static files.
-
 %package devel
 Summary: MLIR development files
-Requires: %{name}-static%{?_isa} = %{version}-%{release}
 
 %description devel
 MLIR development files.
@@ -83,24 +75,21 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %install
 %cmake_install
 
+# Remove static libraries:
+rm -Rf %{buildroot}%{_libdir}/*.a
+
 %check
 # build process .exe tools normally use rpath or static linkage
 %cmake_build --target check-mlir || true
 
 %files
 %license LICENSE.TXT
-%{_libdir}/libMLIR*.so.%{maj_ver}*
 %{_libdir}/libmlir_runner_utils.so.%{maj_ver}*
 %{_libdir}/libmlir_c_runner_utils.so.%{maj_ver}*
 %{_libdir}/libmlir_async_runtime.so.%{maj_ver}*
 
-%files static
-%{_libdir}/libMLIR*.a
-%{_libdir}/libmlir_c_runner_utils_static.a
-
 %files devel
 %{_bindir}/mlir-tblgen
-%{_libdir}/libMLIR*.so
 %{_libdir}/libmlir_runner_utils.so
 %{_libdir}/libmlir_c_runner_utils.so
 %{_libdir}//libmlir_async_runtime.so
@@ -109,6 +98,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Mon Aug 09 2021 Tom Stellard <tstellar@redhat.com> - 13.0.0~rc1-1
+- 13.0.0-rc1 Release
+
 * Thu Jul 22 2021 Fedora Release Engineering <releng@fedoraproject.org> - 12.0.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
