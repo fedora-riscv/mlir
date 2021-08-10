@@ -56,6 +56,7 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
 %cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_SKIP_RPATH=ON \
         -DLLVM_LINK_LLVM_DYLIB:BOOL=ON \
+        -DLLVM_BUILD_LLVM_DYLIB=ON \
         -DCMAKE_PREFIX_PATH=%{_libdir}/cmake/llvm/ \
         -DLLVM_BUILD_UTILS:BOOL=ON \
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
@@ -87,9 +88,12 @@ rm -Rf %{buildroot}%{_libdir}/*.a
 %{_libdir}/libmlir_runner_utils.so.%{maj_ver}*
 %{_libdir}/libmlir_c_runner_utils.so.%{maj_ver}*
 %{_libdir}/libmlir_async_runtime.so.%{maj_ver}*
+%{_libdir}/libMLIR*.so.%{maj_ver}*
+
 
 %files devel
 %{_bindir}/mlir-tblgen
+%{_libdir}/libMLIR*.so
 %{_libdir}/libmlir_runner_utils.so
 %{_libdir}/libmlir_c_runner_utils.so
 %{_libdir}//libmlir_async_runtime.so
