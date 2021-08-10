@@ -7,7 +7,7 @@
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
@@ -48,6 +48,7 @@ MLIR static files.
 
 %package devel
 Summary: MLIR development files
+Requires: %{name}-static%{?_isa} = %{version}-%{release}
 
 %description devel
 MLIR development files.
@@ -108,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Aug 10 2021 Tom Stellard <tstellar@redhat.com> - 13.0.0~rc1-3
+- Add -static requires back to -devel package
+
 * Tue Aug 10 2021 Tom Stellard <tstellar@redhat.com> - 13.0.0~rc1-2
 - Add back the -static sub-package
 
