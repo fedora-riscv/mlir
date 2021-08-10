@@ -7,7 +7,7 @@
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
@@ -38,6 +38,13 @@ compiler infrastructure. MLIR aims to address software fragmentation,
 improve compilation for heterogeneous hardware, significantly reduce
 the cost of building domain specific compilers, and aid in connecting
 existing compilers together.
+
+%package static
+Summary: MLIR static files
+Requires: %{name}%{?_isa} = %{version}-%{release}
+
+%description static
+MLIR static files.
 
 %package devel
 Summary: MLIR development files
@@ -76,9 +83,6 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %install
 %cmake_install
 
-# Remove static libraries:
-rm -Rf %{buildroot}%{_libdir}/*.a
-
 %check
 # build process .exe tools normally use rpath or static linkage
 %cmake_build --target check-mlir || true
@@ -90,6 +94,8 @@ rm -Rf %{buildroot}%{_libdir}/*.a
 %{_libdir}/libmlir_async_runtime.so.%{maj_ver}*
 %{_libdir}/libMLIR*.so.%{maj_ver}*
 
+%files static
+%{_libdir}/libMLIR*.a
 
 %files devel
 %{_bindir}/mlir-tblgen
@@ -102,6 +108,9 @@ rm -Rf %{buildroot}%{_libdir}/*.a
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Aug 10 2021 Tom Stellard <tstellar@redhat.com> - 13.0.0~rc1-2
+- Add back the -static sub-package
+
 * Mon Aug 09 2021 Tom Stellard <tstellar@redhat.com> - 13.0.0~rc1-1
 - 13.0.0-rc1 Release
 
