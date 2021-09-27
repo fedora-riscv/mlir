@@ -8,10 +8,10 @@
 %if %{with snapshot_build}
 %undefine rc_ver
 %global llvm_snapshot_vers pre%{llvm_snapshot_yyyymmdd}.g%{llvm_snapshot_git_revision_short}
-%global mlir_srcdir llvm-project-%{llvm_snapshot_version_major}.%{llvm_snapshot_version_minor}.%{llvm_snapshot_version_patch}.src
 %global maj_ver %{llvm_snapshot_version_major}
 %global min_ver %{llvm_snapshot_version_minor}
 %global patch_ver %{llvm_snapshot_version_patch}
+%global mlir_srcdir llvm-%{maj_ver}.%{min_ver}.%{patch_ver}.src
 %endif
 
 Name: mlir
@@ -22,7 +22,7 @@ Summary: Multi-Level Intermediate Representation Overview
 License: ASL 2.0 with exceptions
 URL: http://mlir.llvm.org
 %if %{with snapshot_build}
-Source0: https://github.com/kwk/llvm-project/releases/download/source-snapshot/llvm-project-%{llvm_snapshot_yyyymmdd}.src.tar.xz
+Source0: %{llvm_snapshot_source_prefix}llvm-project-%{llvm_snapshot_yyyymmdd}.src.tar.xz
 %else
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
@@ -81,6 +81,11 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DLLVM_BUILD_UTILS:BOOL=ON \
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
         -DMLIR_INCLUDE_TESTS:BOOL=OFF \
+	\
+%if %{with snapshot_build}
+	-DLLVM_VERSION_SUFFIX="%{llvm_snapshot_vers}" \
+%endif
+	\
         -DMLIR_INCLUDE_INTEGRATION_TESTS:BOOL=OFF \
         -DBUILD_SHARED_LIBS=OFF \
 %if 0%{?__isa_bits} == 64
