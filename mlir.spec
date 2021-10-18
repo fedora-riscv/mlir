@@ -97,18 +97,19 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
 export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %cmake_build
 
+%if %{with snapshot_build}
+rm -Rfv %{_libdir}/objects-RelWithDebInfo/obj.MLIRCAPI*
+rm -Rfv %{_libdir}/objects-RelWithDebInfo/obj.MLIRCEXECUTIONENGINE
+%endif
 
 %install
 %cmake_install
 
-%if %{with snapshot_build}
-rm -Rfv %{_libdir}/objects-RelWithDebInfo/obj.MLIRCAPI*
-rm -Rfv %{_libdir}/objects-RelWithDebInfo/obj.MLIRCEXE
-%endif
-
 %check
+%if %{with check}
 # build process .exe tools normally use rpath or static linkage
 %cmake_build --target check-mlir || true
+%endif
 
 %files
 %license LICENSE.TXT
