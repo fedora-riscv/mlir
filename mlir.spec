@@ -101,6 +101,11 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %install
 %cmake_install
 
+%if %{with snapshot_build}
+rm -Rfv %{_libdir}/objects-RelWithDebInfo/obj.MLIRCAPI*
+rm -Rfv %{_libdir}/objects-RelWithDebInfo/obj.MLIRCEXE
+%endif
+
 %check
 # build process .exe tools normally use rpath or static linkage
 %cmake_build --target check-mlir || true
