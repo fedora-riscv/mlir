@@ -98,11 +98,6 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %cmake_build
 
 %install
-%if %{with snapshot_build}
-rm -Rfv %{buildroot}%{_libdir}/objects-RelWithDebInfo/obj.MLIRCAPI*
-rm -Rfv %{buildroot}%{_libdir}/objects-RelWithDebInfo/obj.MLIRCEXECUTIONENGINE
-%endif
-
 %cmake_install
 
 %check
@@ -126,6 +121,9 @@ rm -Rfv %{buildroot}%{_libdir}/objects-RelWithDebInfo/obj.MLIRCEXECUTIONENGINE
 # Only these exist: libmlir_c_runner_utils.so  libmlir_c_runner_utils.so.13
 %{_libdir}/libmlir_c_runner_utils_static.a
 %endif
+
+%{_libdir}/objects-RelWithDebInfo/obj.MLIRCAPI*
+%{_libdir}/objects-RelWithDebInfo/obj.MLIRCEXECUTIONENGINE*
 
 %files devel
 %{_bindir}/mlir-tblgen
