@@ -120,10 +120,10 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 # This file is not longer there as a when building snapshots.
 # Only these exist: libmlir_c_runner_utils.so  libmlir_c_runner_utils.so.13
 %{_libdir}/libmlir_c_runner_utils_static.a
+%{_libdir}/objects-RelWithDebInfo/obj.MLIRCEXECUTIONENGINE*
 %endif
 
 %{_libdir}/objects-RelWithDebInfo/obj.MLIRCAPI*
-%{_libdir}/objects-RelWithDebInfo/obj.MLIRCEXECUTIONENGINE*
 
 %files devel
 %{_bindir}/mlir-tblgen
