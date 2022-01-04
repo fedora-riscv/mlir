@@ -7,7 +7,6 @@
 
 %if %{with snapshot_build}
 %undefine rc_ver
-%global llvm_snapshot_vers pre%{llvm_snapshot_yyyymmdd}.g%{llvm_snapshot_git_revision_short}
 %global maj_ver %{llvm_snapshot_version_major}
 %global min_ver %{llvm_snapshot_version_minor}
 %global patch_ver %{llvm_snapshot_version_patch}
@@ -15,7 +14,7 @@
 %endif
 
 Name: mlir
-Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}%{?llvm_snapshot_vers:~%{llvm_snapshot_vers}}
+Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}%{?llvm_snapshot_version_suffix:~%{llvm_snapshot_version_suffix}}
 Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
@@ -83,7 +82,7 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DMLIR_INCLUDE_TESTS:BOOL=OFF \
 	\
 %if %{with snapshot_build}
-	-DLLVM_VERSION_SUFFIX="%{llvm_snapshot_vers}" \
+	-DLLVM_VERSION_SUFFIX="%{llvm_snapshot_version_suffix}" \
 %endif
 	\
         -DMLIR_INCLUDE_INTEGRATION_TESTS:BOOL=OFF \
