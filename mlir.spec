@@ -10,7 +10,8 @@
 %global maj_ver %{llvm_snapshot_version_major}
 %global min_ver %{llvm_snapshot_version_minor}
 %global patch_ver %{llvm_snapshot_version_patch}
-%global mlir_srcdir llvm-project-%{maj_ver}.%{min_ver}.%{patch_ver}.src
+%global mlir_version %{llvm_snapshot_version_major}.%{llvm_snapshot_version_minor}.%{llvm_snapshot_version_patch}
+%global mlir_srcdir llvm-project-%{llvm_snapshot_version_major}.%{llvm_snapshot_version_minor}.%{llvm_snapshot_version_patch}.src
 %endif
 
 Name: mlir
