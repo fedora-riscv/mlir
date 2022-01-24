@@ -108,9 +108,11 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 
 %files
 %license LICENSE.TXT
+%if %{without snapshot_build}
 %{_libdir}/libmlir_runner_utils.so.%{maj_ver}*
 %{_libdir}/libmlir_c_runner_utils.so.%{maj_ver}*
 %{_libdir}/libmlir_async_runtime.so.%{maj_ver}*
+%endif
 %{_libdir}/libMLIR*.so.%{maj_ver}*
 
 %files static
@@ -128,9 +130,11 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %files devel
 %{_bindir}/mlir-tblgen
 %{_libdir}/libMLIR*.so
+%if %{without snapshot_build}
 %{_libdir}/libmlir_runner_utils.so
 %{_libdir}/libmlir_c_runner_utils.so
-%{_libdir}//libmlir_async_runtime.so
+%{_libdir}/libmlir_async_runtime.so
+%endif
 %{_includedir}/mlir
 %{_includedir}/mlir-c
 %{_libdir}/cmake/mlir
