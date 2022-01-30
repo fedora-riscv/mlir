@@ -73,6 +73,9 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
 
 
 %build
+# Test if we can default DWARF4 instead of 5
+%global optflags %(echo %{optflags} " -gdwarf-4 ")
+
 %cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_SKIP_RPATH=ON \
         -DLLVM_LINK_LLVM_DYLIB:BOOL=ON \
