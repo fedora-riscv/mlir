@@ -1,4 +1,4 @@
-%global rc_ver 3
+#global rc_ver 3
 %global maj_ver 13
 %global min_ver 0
 %global patch_ver 1
@@ -109,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Thu Feb 03 2022 Nikita Popov <npopov@redhat.com> - 13.0.1-1
+- Update to LLVM 13.0.1 final
+
 * Tue Feb 01 2022 Nikita Popov <npopov@redhat.com> - 13.0.1~rc3-1
 - Update to LLVM 13.0.1rc3
 
