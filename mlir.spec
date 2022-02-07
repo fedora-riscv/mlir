@@ -7,7 +7,7 @@
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
@@ -18,9 +18,6 @@ Source2: tstellar-gpg-key.asc
 
 #Patch0: 0001-PATCH-mlir-Support-building-MLIR-standalone.patch
 #Patch1: 0002-PATCH-mlir-Fix-building-unittests-in-in-tree-build.patch
-
-# Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work
-ExcludeArch: armv7hl
 
 BuildRequires: gcc
 BuildRequires: gcc-c++
@@ -109,6 +106,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Mon Feb 07 2022 Nikita Popov <npopov@redhat.com> - 13.0.1-2
+- Reenable build on armv7hl
+
 * Thu Feb 03 2022 Nikita Popov <npopov@redhat.com> - 13.0.1-1
 - Update to LLVM 13.0.1 final
 
