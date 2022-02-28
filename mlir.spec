@@ -22,6 +22,7 @@ Source2: tstellar-gpg-key.asc
 BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: cmake
+BuildRequires: ninja-build
 BuildRequires: zlib-devel
 BuildRequires: llvm-devel = %{version}
 BuildRequires: llvm-test = %{version}
@@ -58,7 +59,8 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
 
 
 %build
-%cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+%cmake  -GNinja \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_SKIP_RPATH=ON \
         -DLLVM_LINK_LLVM_DYLIB:BOOL=ON \
         -DLLVM_BUILD_LLVM_DYLIB=ON \
