@@ -1,7 +1,7 @@
-#global rc_ver 3
-%global maj_ver 13
+%global maj_ver 14
 %global min_ver 0
-%global patch_ver 1
+#global rc_ver 1
+%global patch_ver 0
 %global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
 %global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 
@@ -15,9 +15,6 @@ URL: http://mlir.llvm.org
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: tstellar-gpg-key.asc
-
-#Patch0: 0001-PATCH-mlir-Support-building-MLIR-standalone.patch
-#Patch1: 0002-PATCH-mlir-Fix-building-unittests-in-in-tree-build.patch
 
 BuildRequires: gcc
 BuildRequires: gcc-c++
@@ -70,6 +67,8 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DMLIR_INCLUDE_TESTS:BOOL=OFF \
         -DMLIR_INCLUDE_INTEGRATION_TESTS:BOOL=OFF \
         -DBUILD_SHARED_LIBS=OFF \
+        -DMLIR_INSTALL_AGGREGATE_OBJECTS=OFF \
+        -DMLIR_BUILD_MLIR_C_DYLIB=ON \
 %if 0%{?__isa_bits} == 64
         -DLLVM_LIBDIR_SUFFIX=64
 %else
@@ -89,9 +88,6 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 
 %files
 %license LICENSE.TXT
-%{_libdir}/libmlir_runner_utils.so.%{maj_ver}*
-%{_libdir}/libmlir_c_runner_utils.so.%{maj_ver}*
-%{_libdir}/libmlir_async_runtime.so.%{maj_ver}*
 %{_libdir}/libMLIR*.so.%{maj_ver}*
 
 %files static
@@ -100,14 +96,14 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %files devel
 %{_bindir}/mlir-tblgen
 %{_libdir}/libMLIR*.so
-%{_libdir}/libmlir_runner_utils.so
-%{_libdir}/libmlir_c_runner_utils.so
-%{_libdir}//libmlir_async_runtime.so
 %{_includedir}/mlir
 %{_includedir}/mlir-c
 %{_libdir}/cmake/mlir
 
 %changelog
+* Thu Mar 24 2022 Timm Bäder <tbaeder@redhat.com> - 14.0.0-1
+- Update to 14.0.0
+
 * Mon Feb 07 2022 Nikita Popov <npopov@redhat.com> - 13.0.1-2
 - Reenable build on armv7hl
 
