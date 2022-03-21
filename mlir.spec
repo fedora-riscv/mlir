@@ -1,4 +1,4 @@
-%global rc_ver 1
+#global rc_ver 3
 %global maj_ver 13
 %global min_ver 0
 %global patch_ver 1
@@ -28,9 +28,6 @@ Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ve
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: tstellar-gpg-key.asc
 %endif
-
-# Unexpected linking error: neither -j1, disabling lto, LD_LIBRARY_PATH, rpath work
-ExcludeArch: armv7hl
 
 BuildRequires: gcc
 BuildRequires: gcc-c++
@@ -144,6 +141,20 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 
 %changelog
 %{?llvm_snapshot_changelog_entry}
+* Mon Feb 07 2022 Nikita Popov <npopov@redhat.com> - 13.0.1-2
+- Reenable build on armv7hl
+
+* Thu Feb 03 2022 Nikita Popov <npopov@redhat.com> - 13.0.1-1
+- Update to LLVM 13.0.1 final
+
+* Tue Feb 01 2022 Nikita Popov <npopov@redhat.com> - 13.0.1~rc3-1
+- Update to LLVM 13.0.1rc3
+
+* Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 13.0.1~rc2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
+* Fri Jan 14 2022 Nikita Popov <npopov@redhat.com> - 13.0.1~rc2-1
+- Update to LLVM 13.0.1rc2
 
 * Wed Jan 12 2022 Nikita Popov <npopov@redhat.com> - 13.0.1~rc1-1
 - Update to LLVM 13.0.1rc1
