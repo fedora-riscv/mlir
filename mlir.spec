@@ -1,3 +1,11 @@
+%bcond_without snapshot_build
+
+%if %{with snapshot_build}
+# Unlock LLVM Snapshot LUA functions
+%{llvm_sb_verbose}
+%{llvm_sb}
+%endif
+
 #global rc_ver 3
 %global maj_ver 13
 %global min_ver 0
