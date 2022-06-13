@@ -31,6 +31,7 @@ License: ASL 2.0 with exceptions
 URL: http://mlir.llvm.org
 %if %{with snapshot_build}
 Source0: %{llvm_snapshot_source_prefix}llvm-project-%{llvm_snapshot_yyyymmdd}.src.tar.xz
+%{llvm_snapshot_extra_source_tags}
 %else
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
