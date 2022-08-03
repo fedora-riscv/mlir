@@ -1,20 +1,20 @@
-%global maj_ver 14
+%global maj_ver 15
 %global min_ver 0
-#global rc_ver 1
-%global patch_ver 5
+#global rc_ver 3
+%global patch_ver 0
 %global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
 %global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 2%{?dist}
+Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
 URL: http://mlir.llvm.org
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
-Source2: tstellar-gpg-key.asc
+Source2: release-keys.asc
 
 BuildRequires: gcc
 BuildRequires: gcc-c++
@@ -89,6 +89,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %files
 %license LICENSE.TXT
 %{_libdir}/libMLIR*.so.%{maj_ver}*
+%{_libdir}/libmlir_async_runtime.so.%{maj_ver}*
+%{_libdir}/libmlir_c_runner_utils.so.%{maj_ver}*
+%{_libdir}/libmlir_runner_utils.so.%{maj_ver}*
 
 %files static
 %{_libdir}/libMLIR*.a
@@ -96,11 +99,17 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %files devel
 %{_bindir}/mlir-tblgen
 %{_libdir}/libMLIR*.so
+%{_libdir}/libmlir_async_runtime.so
+%{_libdir}/libmlir_c_runner_utils.so
+%{_libdir}/libmlir_runner_utils.so
 %{_includedir}/mlir
 %{_includedir}/mlir-c
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Sep 06 2022 Nikita Popov <npopov@redhat.com> - 15.0.0-1
+- Update to LLVM 15.0.0
+
 * Thu Jul 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 14.0.5-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
