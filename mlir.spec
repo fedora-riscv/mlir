@@ -1,13 +1,13 @@
 #global rc_ver 3
 %global maj_ver 13
 %global min_ver 0
-%global patch_ver 0
+%global patch_ver 1
 %global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
 %global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 2%{?dist}
+Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: ASL 2.0 with exceptions
@@ -109,6 +109,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Aug 02 2022 Tom Stellard <tstellar@redhat.com> - 13.0.1-1
+- 13.0.1 Release
+
 * Wed Oct 06 2021 Tom Stellard <tstellar@redhat.com> - 13.0.0-2
 - Rebuild for llvm soname bump
 
