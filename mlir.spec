@@ -10,7 +10,7 @@ Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
 Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
-License: ASL 2.0 with exceptions
+License: Apache-2.0 WITH LLVM-exception
 URL: http://mlir.llvm.org
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
