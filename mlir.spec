@@ -7,7 +7,7 @@
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: Apache-2.0 WITH LLVM-exception
@@ -43,6 +43,7 @@ MLIR static files.
 
 %package devel
 Summary: MLIR development files
+Requires: %{name}%{?_isa} = %{version}-%{release}
 Requires: %{name}-static%{?_isa} = %{version}-%{release}
 
 %description devel
@@ -107,6 +108,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Mon Sep 12 2022 Nikita Popov <npopov@redhat.com> - 15.0.0-2
+- Add explicit requires from mlir-devel to mlir
+
 * Tue Sep 06 2022 Nikita Popov <npopov@redhat.com> - 15.0.0-1
 - Update to LLVM 15.0.0
 
