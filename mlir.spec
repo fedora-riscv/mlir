@@ -7,7 +7,7 @@
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: Apache-2.0 WITH LLVM-exception
@@ -23,6 +23,7 @@ BuildRequires: ninja-build
 BuildRequires: zlib-devel
 BuildRequires: llvm-devel = %{version}
 BuildRequires: llvm-test = %{version}
+BuildRequires: python3-lit
 
 # For origin certification
 BuildRequires: gnupg2
@@ -63,9 +64,10 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DLLVM_LINK_LLVM_DYLIB:BOOL=ON \
         -DLLVM_BUILD_LLVM_DYLIB=ON \
         -DCMAKE_PREFIX_PATH=%{_libdir}/cmake/llvm/ \
+        -DLLVM_EXTERNAL_LIT=%{_bindir}/lit \
         -DLLVM_BUILD_UTILS:BOOL=ON \
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
-        -DMLIR_INCLUDE_TESTS:BOOL=OFF \
+        -DMLIR_INCLUDE_TESTS:BOOL=ON \
         -DMLIR_INCLUDE_INTEGRATION_TESTS:BOOL=OFF \
         -DBUILD_SHARED_LIBS=OFF \
         -DMLIR_INSTALL_AGGREGATE_OBJECTS=OFF \
@@ -84,8 +86,17 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %cmake_install
 
 %check
-# build process .exe tools normally use rpath or static linkage
-%cmake_build --target check-mlir || true
+# Remove tablegen tests, as they rely on includes from llvm/.
+rm -rf test/mlir-tblgen
+
+# TODO: Test currently fails on i686.
+%ifarch %{ix86}
+rm test/IR/file-metadata-resources.mlir
+%endif
+
+# Test execution normally relies on RPATH, so set LD_LIBRARY_PATH instead.
+export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
+%cmake_build --target check-mlir
 
 %files
 %license LICENSE.TXT
@@ -108,6 +119,9 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Wed Sep 14 2022 Nikita Popov <npopov@redhat.com> - 15.0.0-3
+- Run tests during the build
+
 * Mon Sep 12 2022 Nikita Popov <npopov@redhat.com> - 15.0.0-2
 - Add explicit requires from mlir-devel to mlir
 
