@@ -7,7 +7,7 @@
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: Apache-2.0 WITH LLVM-exception
@@ -119,6 +119,9 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Thu Sep 15 2022 Nikita Popov <npopov@redhat.com> - 15.0.0-4
+- Rebuild
+
 * Wed Sep 14 2022 Nikita Popov <npopov@redhat.com> - 15.0.0-3
 - Run tests during the build
 
