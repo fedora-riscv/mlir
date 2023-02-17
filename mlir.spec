@@ -1,9 +1,10 @@
-%global maj_ver 15
+%global maj_ver 16
 %global min_ver 0
-#global rc_ver 3
-%global patch_ver 7
+%global patch_ver 0
+%global rc_ver 1
 %global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
 %global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
+%global cmake_srcdir cmake-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 
 # Opt out of https://fedoraproject.org/wiki/Changes/fno-omit-frame-pointer
 # https://bugzilla.redhat.com/show_bug.cgi?id=2158587
@@ -11,7 +12,7 @@
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 2%{?dist}
+Release: 1%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: Apache-2.0 WITH LLVM-exception
@@ -19,13 +20,19 @@ URL: http://mlir.llvm.org
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: release-keys.asc
+Source3: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{mlir_version}%{?rc_ver:-rc%{rc_ver}}/%{cmake_srcdir}.tar.xz
+Source4: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{mlir_version}%{?rc_ver:-rc%{rc_ver}}/%{cmake_srcdir}.tar.xz.sig
+
+Patch0:  0001-Changes-the-path-to-gtest.patch
 
 BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: cmake
+BuildRequires: gtest
 BuildRequires: ninja-build
 BuildRequires: zlib-devel
 BuildRequires: llvm-devel = %{version}
+BuildRequires: llvm-googletest = %{version}
 BuildRequires: llvm-test = %{version}
 BuildRequires: python3-lit
 
@@ -56,12 +63,26 @@ MLIR development files.
 
 %prep
 %{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
+%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE4}' --data='%{SOURCE3}'
+%setup -T -q -b 3 -n %{cmake_srcdir}
+# TODO: It would be more elegant to set -DLLVM_COMMON_CMAKE_UTILS=%{_builddir}/%{cmake_srcdir},
+# but this is not a CACHED variable, so we can't actually set it externally :(
+cd ..
+mv %{cmake_srcdir} cmake
 %autosetup -n %{mlir_srcdir}/%{name} -p2
-# remove all but keep mlir
-find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
 
 
 %build
+
+%ifarch %ix86
+%global debug_package %{nil}
+%global _lto_cflags %{nil}
+%endif
+
+%ifarch %aarch64
+%global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
+%endif
+
 %cmake  -GNinja \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_SKIP_RPATH=ON \
@@ -77,6 +98,10 @@ find ../* -maxdepth 0 ! -name '%{name}' -exec rm -rf {} +
         -DBUILD_SHARED_LIBS=OFF \
         -DMLIR_INSTALL_AGGREGATE_OBJECTS=OFF \
         -DMLIR_BUILD_MLIR_C_DYLIB=ON \
+%ifarch %ix86
+        -DLLVM_PARALLEL_LINK_JOBS=1 \
+        -DMLIR_RUN_X86VECTOR_TESTS:BOOL=OFF \
+%endif
 %if 0%{?__isa_bits} == 64
         -DLLVM_LIBDIR_SUFFIX=64
 %else
@@ -114,6 +139,7 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %{_libdir}/libMLIR*.so.%{maj_ver}*
 %{_libdir}/libmlir_async_runtime.so.%{maj_ver}*
 %{_libdir}/libmlir_c_runner_utils.so.%{maj_ver}*
+%{_libdir}/libmlir_float16_utils.so.%{maj_ver}*
 %{_libdir}/libmlir_runner_utils.so.%{maj_ver}*
 
 %files static
@@ -124,6 +150,7 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %{_bindir}/mlir-linalg-ods-yaml-gen
 %{_bindir}/mlir-lsp-server
 %{_bindir}/mlir-opt
+%{_bindir}/mlir-pdll
 %{_bindir}/mlir-pdll-lsp-server
 %{_bindir}/mlir-reduce
 %{_bindir}/mlir-tblgen
@@ -132,12 +159,16 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %{_libdir}/libMLIR*.so
 %{_libdir}/libmlir_async_runtime.so
 %{_libdir}/libmlir_c_runner_utils.so
+%{_libdir}/libmlir_float16_utils.so
 %{_libdir}/libmlir_runner_utils.so
 %{_includedir}/mlir
 %{_includedir}/mlir-c
 %{_libdir}/cmake/mlir
 
 %changelog
+* Wed Feb 15 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 16.0.0~rc1-1
+- Update to LLVM 16.0.0 RC1
+
 * Thu Jan 19 2023 Fedora Release Engineering <releng@fedoraproject.org> - 15.0.7-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_38_Mass_Rebuild
 
