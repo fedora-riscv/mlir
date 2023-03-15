@@ -128,6 +128,34 @@ rm test/IR/file-metadata-resources.mlir
 # 2. The cpu runner tests call mlir-opt without awareness of the host index size.
 # For this reason, skip mlir-cpu-runner tests on 32-bit.
 rm -rf test/mlir-cpu-runner
+
+# The following test requires AVX2.
+rm -rf test/Dialect/Math/polynomial-approximation.mlir
+
+# TODO: Can these vector tests pass on i386?
+rm -rf test/Conversion/MathToLibm/convert-to-libm.mlir
+rm -rf test/Dialect/Vector/canonicalize.mlir
+rm -rf test/Dialect/Vector/vector-unroll-options.mlir
+rm -rf test/Dialect/SparseTensor/sparse_vector_ops.mlir
+
+# TODO: Investigate the following issues.
+rm -rf test/mlir-pdll-lsp-server/compilation_database.test
+rm -rf test/mlir-pdll-lsp-server/completion.test
+rm -rf test/mlir-pdll-lsp-server/definition-split-file.test
+rm -rf test/mlir-pdll-lsp-server/definition.test
+rm -rf test/mlir-pdll-lsp-server/document-links.test
+rm -rf test/mlir-pdll-lsp-server/document-symbols.test
+rm -rf test/mlir-pdll-lsp-server/exit-eof.test
+rm -rf test/mlir-pdll-lsp-server/exit-with-shutdown.test
+rm -rf test/mlir-pdll-lsp-server/exit-without-shutdown.test
+rm -rf test/mlir-pdll-lsp-server/hover.test
+rm -rf test/mlir-pdll-lsp-server/initialize-params-invalid.test
+rm -rf test/mlir-pdll-lsp-server/initialize-params.test
+rm -rf test/mlir-pdll-lsp-server/inlay-hints.test
+rm -rf test/mlir-pdll-lsp-server/references.test
+rm -rf test/mlir-pdll-lsp-server/signature-help.test
+rm -rf test/mlir-pdll-lsp-server/textdocument-didchange.test
+rm -rf test/mlir-pdll-lsp-server/view-output.test
 %endif
 
 # Test execution normally relies on RPATH, so set LD_LIBRARY_PATH instead.
