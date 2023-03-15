@@ -79,9 +79,12 @@ mv %{cmake_srcdir} cmake
 %global _lto_cflags %{nil}
 %endif
 
-%ifarch %aarch64
-%global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
-%endif
+# On aarch64, dwz can take very long to process all the files. It either fails
+# reaching a timeout or consumes too much RAM.  Restrict its resources in
+# order to stop dwz early. We prefer to miss the DWARF optimization than not
+# not being able to build this package on aarch64.
+%global _dwz_low_mem_die_limit_aarch64 1
+%global _dwz_max_die_limit_aarch64 1000000
 
 %cmake  -GNinja \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
