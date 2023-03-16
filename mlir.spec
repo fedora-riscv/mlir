@@ -1,7 +1,7 @@
 %global maj_ver 16
 %global min_ver 0
 %global patch_ver 0
-%global rc_ver 3
+%global rc_ver 4
 %global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
 %global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 %global cmake_srcdir cmake-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
@@ -23,12 +23,10 @@ Source2: release-keys.asc
 Source3: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{mlir_version}%{?rc_ver:-rc%{rc_ver}}/%{cmake_srcdir}.tar.xz
 Source4: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{mlir_version}%{?rc_ver:-rc%{rc_ver}}/%{cmake_srcdir}.tar.xz.sig
 
-Patch0:  0001-Changes-the-path-to-gtest.patch
 
 BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: cmake
-BuildRequires: gtest
 BuildRequires: ninja-build
 BuildRequires: zlib-devel
 BuildRequires: llvm-devel = %{version}
@@ -93,6 +91,7 @@ mv %{cmake_srcdir} cmake
         -DLLVM_BUILD_LLVM_DYLIB=ON \
         -DCMAKE_PREFIX_PATH=%{_libdir}/cmake/llvm/ \
         -DLLVM_EXTERNAL_LIT=%{_bindir}/lit \
+        -DLLVM_THIRD_PARTY_DIR=%{_datadir}/llvm/src/utils \
         -DLLVM_BUILD_TOOLS:BOOL=ON \
         -DLLVM_BUILD_UTILS:BOOL=ON \
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
@@ -197,6 +196,9 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Wed Mar 15 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 16.0.0~rc4-1
+- Update to LLVM 16.0.0 RC4
+
 * Thu Feb 23 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 16.0.0~rc3-1
 - Update to LLVM 16.0.0 RC3
 
