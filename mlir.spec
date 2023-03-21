@@ -23,6 +23,8 @@ Source2: release-keys.asc
 Source3: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{mlir_version}%{?rc_ver:-rc%{rc_ver}}/%{cmake_srcdir}.tar.xz
 Source4: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{mlir_version}%{?rc_ver:-rc%{rc_ver}}/%{cmake_srcdir}.tar.xz.sig
 
+# Support for i686 upstream is unclear with lots of tests failling.
+ExcludeArch: i686
 
 BuildRequires: gcc
 BuildRequires: gcc-c++
