@@ -1,0 +1,30 @@
+From 500300bc35937e7cd3d7ae3a4c91c29c4f98033a Mon Sep 17 00:00:00 2001
+From: Tulio Magno Quites Machado Filho <tuliom@redhat.com>
+Date: Mon, 27 Mar 2023 10:25:05 -0300
+Subject: [PATCH] [mlir] Change LLVM_COMMON_CMAKE_UTILS usage
+
+Let LLVM_COMMON_CMAKE_UTILS store the directory where cmake modules are
+available and stop assuming its directory structure.
+---
+ mlir/CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/mlir/CMakeLists.txt b/mlir/CMakeLists.txt
+index af83f8132405..fbc192e2c187 100644
+--- a/mlir/CMakeLists.txt
++++ b/mlir/CMakeLists.txt
+@@ -2,9 +2,9 @@
+ cmake_minimum_required(VERSION 3.13.4)
+ 
+ if(NOT DEFINED LLVM_COMMON_CMAKE_UTILS)
+-  set(LLVM_COMMON_CMAKE_UTILS ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
++  set(LLVM_COMMON_CMAKE_UTILS ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Modules)
+ endif()
+-include(${LLVM_COMMON_CMAKE_UTILS}/Modules/CMakePolicy.cmake
++include(${LLVM_COMMON_CMAKE_UTILS}/CMakePolicy.cmake
+   NO_POLICY_SCOPE)
+ 
+ # Check if MLIR is built as a standalone project.
+-- 
+2.39.2
+

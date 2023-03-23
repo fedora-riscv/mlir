@@ -1,10 +1,9 @@
 %global maj_ver 16
 %global min_ver 0
 %global patch_ver 0
-%global rc_ver 4
+#global rc_ver 4
 %global mlir_version %{maj_ver}.%{min_ver}.%{patch_ver}
-%global mlir_srcdir llvm-project-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
-%global cmake_srcdir cmake-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
+%global mlir_srcdir mlir-%{mlir_version}%{?rc_ver:rc%{rc_ver}}.src
 
 # Opt out of https://fedoraproject.org/wiki/Changes/fno-omit-frame-pointer
 # https://bugzilla.redhat.com/show_bug.cgi?id=2158587
@@ -20,8 +19,8 @@ URL: http://mlir.llvm.org
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: release-keys.asc
-Source3: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{mlir_version}%{?rc_ver:-rc%{rc_ver}}/%{cmake_srcdir}.tar.xz
-Source4: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{mlir_version}%{?rc_ver:-rc%{rc_ver}}/%{cmake_srcdir}.tar.xz.sig
+
+Patch0: 0001-mlir-Change-LLVM_COMMON_CMAKE_UTILS-usage.patch
 
 # Support for i686 upstream is unclear with lots of tests failling.
 ExcludeArch: i686
@@ -63,13 +62,7 @@ MLIR development files.
 
 %prep
 %{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
-%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE4}' --data='%{SOURCE3}'
-%setup -T -q -b 3 -n %{cmake_srcdir}
-# TODO: It would be more elegant to set -DLLVM_COMMON_CMAKE_UTILS=%{_builddir}/%{cmake_srcdir},
-# but this is not a CACHED variable, so we can't actually set it externally :(
-cd ..
-mv %{cmake_srcdir} cmake
-%autosetup -n %{mlir_srcdir}/%{name} -p2
+%autosetup -n %{mlir_srcdir} -p2
 
 
 %build
@@ -94,6 +87,7 @@ mv %{cmake_srcdir} cmake
         -DCMAKE_PREFIX_PATH=%{_libdir}/cmake/llvm/ \
         -DLLVM_EXTERNAL_LIT=%{_bindir}/lit \
         -DLLVM_THIRD_PARTY_DIR=%{_datadir}/llvm/src/utils \
+        -DLLVM_COMMON_CMAKE_UTILS=%{_libdir}/cmake/llvm/ \
         -DLLVM_BUILD_TOOLS:BOOL=ON \
         -DLLVM_BUILD_UTILS:BOOL=ON \
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
@@ -198,6 +192,9 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Mar 21 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 16.0.0-1
+- Update to LLVM 16.0.0
+
 * Wed Mar 15 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 16.0.0~rc4-1
 - Update to LLVM 16.0.0 RC4
 
