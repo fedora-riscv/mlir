@@ -12,7 +12,7 @@
 
 Name: mlir
 Version: %{mlir_version}%{?rc_ver:~rc%{rc_ver}}
-Release: 1%{?dist}
+Release: 1.rv64%{?dist}
 Summary: Multi-Level Intermediate Representation Overview
 
 License: Apache-2.0 WITH LLVM-exception
@@ -125,7 +125,7 @@ export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 # Remove tablegen tests, as they rely on includes from llvm/.
 rm -rf test/mlir-tblgen
 
-%ifarch %{ix86}
+%ifarch %{ix86} riscv64
 # TODO: Test currently fails on i686.
 rm test/IR/file-metadata-resources.mlir
 
@@ -200,6 +200,9 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %{_libdir}/cmake/mlir
 
 %changelog
+* Tue Aug 29 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 16.0.6-1.rv64
+- Fix build on riscv64.
+
 * Wed Jul 12 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 16.0.6-1
 - Update to LLVM 16.0.6
 
