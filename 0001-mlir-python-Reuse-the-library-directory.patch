@@ -1,0 +1,72 @@
+From d8d712c632e925139a6e5e53ee64749301358b25 Mon Sep 17 00:00:00 2001
+From: Tulio Magno Quites Machado Filho <tuliom@redhat.com>
+Date: Tue, 5 Sep 2023 10:35:37 -0300
+Subject: [PATCH] [mlir][python] Reuse the library directory
+
+Prefer to get the path to the shared libraries from config.llvm_shlib_dir.
+Fallback to the previous path only if config.llvm_shlib_dir is not
+defined.
+
+This ensures the test will pass regardless of the build configuration
+used downstream.
+---
+ mlir/test/lit.cfg.py                 |  1 +
+ mlir/test/python/execution_engine.py | 12 +++++++-----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/mlir/test/lit.cfg.py b/mlir/test/lit.cfg.py
+index 3a8bdbfcec28..eb8e66a2491c 100644
+--- a/mlir/test/lit.cfg.py
++++ b/mlir/test/lit.cfg.py
+@@ -130,6 +130,7 @@ tools.extend(
+         ToolSubst("toyc-ch7", unresolved="ignore"),
+         ToolSubst('transform-opt-ch2', unresolved='ignore'),
+         ToolSubst('transform-opt-ch3', unresolved='ignore'),
++        ToolSubst("%llvm_shlib_dir", config.llvm_shlib_dir, unresolved="ignore"),
+         ToolSubst("%mlir_lib_dir", config.mlir_lib_dir, unresolved="ignore"),
+         ToolSubst("%mlir_src_dir", config.mlir_src_root, unresolved="ignore"),
+     ]
+diff --git a/mlir/test/python/execution_engine.py b/mlir/test/python/execution_engine.py
+index e8b47007a890..0cb78dd0bac6 100644
+--- a/mlir/test/python/execution_engine.py
++++ b/mlir/test/python/execution_engine.py
+@@ -1,4 +1,4 @@
+-# RUN: %PYTHON %s 2>&1 | FileCheck %s
++# RUN: env LLVM_SHLIB_DIR=%llvm_shlib_dir %PYTHON %s 2>&1 | FileCheck %s
+ # REQUIRES: host-supports-jit
+ import gc, sys, os, tempfile
+ from mlir.ir import *
+@@ -6,6 +6,8 @@ from mlir.passmanager import *
+ from mlir.execution_engine import *
+ from mlir.runtime import *
+ 
++_DEFAULT_LIB_DIR = "../../../../lib"
++LIB_DIR = os.getenv("LLVM_SHLIB_DIR", _DEFAULT_LIB_DIR)
+ 
+ # Log everything to stderr and flush so that we have a unified stream to match
+ # errors/info emitted by MLIR to stderr.
+@@ -540,8 +542,8 @@ def testSharedLibLoad():
+             ]
+         else:
+             shared_libs = [
+-                "../../../../lib/libmlir_runner_utils.so",
+-                "../../../../lib/libmlir_c_runner_utils.so",
++                LIB_DIR + "/libmlir_runner_utils.so",
++                LIB_DIR + "/libmlir_c_runner_utils.so",
+             ]
+ 
+         execution_engine = ExecutionEngine(
+@@ -583,8 +585,8 @@ def testNanoTime():
+             ]
+         else:
+             shared_libs = [
+-                "../../../../lib/libmlir_runner_utils.so",
+-                "../../../../lib/libmlir_c_runner_utils.so",
++                LIB_DIR + "/libmlir_runner_utils.so",
++                LIB_DIR + "/libmlir_c_runner_utils.so",
+             ]
+ 
+         execution_engine = ExecutionEngine(
+-- 
+2.41.0
+
