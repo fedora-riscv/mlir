@@ -1,5 +1,5 @@
 %global toolchain clang
-%global maj_ver 16
+%global maj_ver 17
 %global min_ver 0
 %global patch_ver 6
 #global rc_ver 4
@@ -21,7 +21,48 @@ Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ve
 Source1: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{maj_ver}.%{min_ver}.%{patch_ver}%{?rc_ver:-rc%{rc_ver}}/%{mlir_srcdir}.tar.xz.sig
 Source2: release-keys.asc
 
-Patch0: 0001-mlir-Change-LLVM_COMMON_CMAKE_UTILS-usage.patch
+Patch1: 0001-mlir-python-Reuse-the-library-directory.patch
+
+%{lua:
+
+-- Return the maximum number of parallel jobs a build can run based on the
+-- amount of maximum memory used per process (per_proc_mem).
+function print_max_procs(per_proc_mem)
+    local f = io.open("/proc/meminfo", "r")
+    local mem = 0
+    local nproc_str = nil
+    for line in f:lines() do
+        _, _, mem = string.find(line, "MemTotal:%s+(%d+)%s+kB")
+        if mem then
+           break
+        end
+    end
+    f:close()
+
+    local proc_handle = io.popen("nproc")
+    _, _, nproc_str = string.find(proc_handle:read("*a"), "(%d+)")
+    proc_handle:close()
+    local nproc = tonumber(nproc_str)
+    if nproc < 1 then
+        nproc = 1
+    end
+    local mem_mb = mem / 1024
+    local cpu = math.floor(mem_mb / per_proc_mem)
+    if cpu < 1 then
+        cpu = 1
+    end
+
+    if cpu > nproc then
+        cpu = nproc
+    end
+    print(cpu)
+end
+}
+
+# The amount of RAM used per process has been set by trial and error.
+# This number may increase/decrease from time to time and may require changes.
+# We prefer to be on the safe side in order to avoid spurious errors.
+%global _smp_mflags -j%{lua: print_max_procs(6144)}
 
 # Support for i686 upstream is unclear with lots of tests failling.
 ExcludeArch: i686
@@ -31,9 +72,14 @@ BuildRequires: cmake
 BuildRequires: ninja-build
 BuildRequires: zlib-devel
 BuildRequires: llvm-devel = %{version}
+BuildRequires: llvm-cmake-utils = %{version}
 BuildRequires: llvm-googletest = %{version}
 BuildRequires: llvm-test = %{version}
 BuildRequires: python3-lit
+BuildRequires: python3-devel
+BuildRequires: python3-numpy
+BuildRequires: python3-pybind11
+BuildRequires: python3-pyyaml
 
 # For origin certification
 BuildRequires: gnupg2
@@ -59,6 +105,14 @@ Requires: %{name}-static%{?_isa} = %{version}-%{release}
 
 %description devel
 MLIR development files.
+
+%package -n python3-%{name}
+Summary: MLIR python bindings
+Requires: python3
+Requires: python3-numpy
+
+%description -n python3-%{name}
+%{summary}
 
 %prep
 %{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
@@ -93,21 +147,24 @@ MLIR development files.
         -DCMAKE_PREFIX_PATH=%{_libdir}/cmake/llvm/ \
         -DLLVM_EXTERNAL_LIT=%{_bindir}/lit \
         -DLLVM_THIRD_PARTY_DIR=%{_datadir}/llvm/src/utils \
-        -DLLVM_COMMON_CMAKE_UTILS=%{_libdir}/cmake/llvm/ \
+        -DLLVM_COMMON_CMAKE_UTILS=%{_datadir}/llvm/cmake \
         -DLLVM_BUILD_TOOLS:BOOL=ON \
         -DLLVM_BUILD_UTILS:BOOL=ON \
+        -DLLVM_LIBRARY_OUTPUT_INTDIR="." \
+        -DLLVM_SHLIB_OUTPUT_INTDIR="%{_builddir}/%{mlir_srcdir}/%{__cmake_builddir}/lib/ExecutionEngine/" \
         -DMLIR_INCLUDE_DOCS:BOOL=ON \
         -DMLIR_INCLUDE_TESTS:BOOL=ON \
         -DMLIR_INCLUDE_INTEGRATION_TESTS:BOOL=OFF \
         -DBUILD_SHARED_LIBS=OFF \
         -DMLIR_INSTALL_AGGREGATE_OBJECTS=OFF \
         -DMLIR_BUILD_MLIR_C_DYLIB=ON \
-%ifarch %ix86 ppc64le
+%ifarch aarch64 %ix86 ppc64le x86_64
         -DLLVM_PARALLEL_LINK_JOBS=1 \
 %endif
 %ifarch %ix86
         -DMLIR_RUN_X86VECTOR_TESTS:BOOL=OFF \
 %endif
+        -DMLIR_ENABLE_BINDINGS_PYTHON:BOOL=ON \
 %if 0%{?__isa_bits} == 64
         -DLLVM_LIBDIR_SUFFIX=64
 %else
@@ -117,13 +174,23 @@ MLIR development files.
 export LD_LIBRARY_PATH=%{_builddir}/%{mlir_srcdir}/%{name}/%{_build}/%{_lib}
 %cmake_build
 
-
 %install
 %cmake_install
+mkdir -p %{buildroot}/%{python3_sitearch}
+mv %{buildroot}/usr/python_packages/mlir_core/mlir %{buildroot}/%{python3_sitearch}
+# These directories should be empty now.
+rmdir %{buildroot}/usr/python_packages/mlir_core %{buildroot}/usr/python_packages
+# Unneeded files.
+rm -rf %{buildroot}/usr/src/python
 
 %check
 # Remove tablegen tests, as they rely on includes from llvm/.
 rm -rf test/mlir-tblgen
+
+%ifarch s390x
+# s390x does not support half-float
+rm test/python/execution_engine.py
+%endif
 
 %ifarch %{ix86} riscv64
 # TODO: Test currently fails on i686.
@@ -165,7 +232,8 @@ rm -rf test/mlir-pdll-lsp-server/view-output.test
 %endif
 
 # Test execution normally relies on RPATH, so set LD_LIBRARY_PATH instead.
-export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
+export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}:%{buildroot}/%{python3_sitearch}/mlir/_mlir_libs
+export PYTHONPATH=%{buildroot}/%{python3_sitearch}
 %cmake_build --target check-mlir
 
 %files
@@ -199,7 +267,55 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %{_includedir}/mlir-c
 %{_libdir}/cmake/mlir
 
+%files -n python3-%{name}
+%{python3_sitearch}/mlir/
+
 %changelog
+* Wed Jan 31 2024 Guoguo <i@qwq.trade> - 17.0.6-1.rv64
+- Update from fedoraproject
+
+* Wed Nov 29 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.6-1
+- Update to LLVM 17.0.6
+
+* Wed Nov 01 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.4-1
+- Update to LLVM 17.0.4
+
+* Wed Oct 18 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.3-1
+- Update to LLVM 17.0.3
+
+* Wed Oct 04 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.2-1
+- Update to LLVM 17.0.2
+
+* Sat Sep 23 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.1-1
+- Update to LLVM 17.0.1
+
+* Sun Sep 10 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.0~rc4-1
+- Update to LLVM 17.0.0 RC4
+
+* Tue Sep 05 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.0~rc3-3
+- Enable python bindings. Fixes rhbz#2221241
+
+* Mon Aug 28 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.0~rc3-2
+- Restrict link jobs on x86_64
+
+* Fri Aug 25 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.0~rc3-1
+- Update to LLVM 17.0.0 RC3
+
+* Wed Aug 23 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.0~rc2-1
+- Update to LLVM 17.0.0 RC2
+
+* Wed Aug 02 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 17.0.0~rc1-1
+- Update to LLVM 17.0.0 RC1
+
+* Thu Jul 20 2023 Fedora Release Engineering <releng@fedoraproject.org> - 16.0.6-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+
+* Mon Jul 10 2023 Tulio Magno Quites Machado Filho <tuliom@redhat.com> - 16.0.6-1
+- Update to LLVM 16.0.6
+
+* Thu Jun 15 2023 Nikita Popov <npopov@redhat.com> - 16.0.5-2
+- Use llvm-cmake-utils package
+
 * Tue Aug 29 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 16.0.6-1.rv64
 - Fix build on riscv64.
 
